@@ -89,10 +89,10 @@ routeMiddleware (Route method re) app req =
 waitraMiddleware :: [Route] -> Middleware
 waitraMiddleware = foldr (.) id . map routeMiddleware
 
-jsonApp :: (FromJSON a, ToJSON b) => (a -> (H.Status, H.ResponseHeaders, b)) -> Application
+jsonApp :: (FromJSON a, ToJSON b) => (a -> IO (H.Status, H.ResponseHeaders, b)) -> Application
 jsonApp f req respond = do
   body <- strictRequestBody req
   case eitherDecode body of
     Left err  -> respond $ responseLBS H.status400 [] $ fromString err
-    Right x   -> let (status, headers, y) = f x
-                 in respond $ responseLBS status headers $ encode y
+    Right x   -> do (status, headers, y) <- f x
+                    respond $ responseLBS status headers $ encode y

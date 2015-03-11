@@ -7,5 +7,5 @@ install:
   - cabal install --only-dependencies --enable-tests
 
 script:
-  # we don't have any tests :(
-  - cabal build
+  - cabal configure --enable-tests
+  - cabal test
