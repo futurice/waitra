@@ -14,5 +14,5 @@ echoRoute = routeGet (string "/api/echo/" *> many anySym) echoApp
   where echoApp msg _req respond = respond $ responseLBS status200 [] (fromString msg)
 
 app :: Application
-app = compile [echoRoute] fallbackApp
+app = waitraMiddleware [echoRoute] fallbackApp
 ```

@@ -30,8 +30,8 @@ module Network.Waitra
   -- * JSON helper
   , jsonApp
   -- * Compilation
-  , compile
-  , compileRoute
+  , routeMiddleware
+  , waitraMiddleware
   ) where
 
 import           Data.Aeson
@@ -79,15 +79,15 @@ routePut = route H.methodPut
 path :: Request -> Path
 path req = T.unpack . T.intercalate (T.pack "/") $ (T.pack "") : pathInfo req
 
-compileRoute :: Route -> Middleware
-compileRoute (Route method re) app req =
+routeMiddleware :: Route -> Middleware
+routeMiddleware (Route method re) app req =
    case (requestMethod req == method, path req =~ re) of
      (True, Just routeApp) -> routeApp req
      _                     -> app req
 
 -- | Turn the list of routes into `Middleware`
-compile :: [Route] -> Middleware
-compile = foldr (.) id . map compileRoute
+waitraMiddleware :: [Route] -> Middleware
+waitraMiddleware = foldr (.) id . map routeMiddleware
 
 jsonApp :: (FromJSON a, ToJSON b) => (a -> (H.Status, H.ResponseHeaders, b)) -> Application
 jsonApp f req respond = do
