@@ -95,4 +95,4 @@ jsonApp f req respond = do
   case eitherDecode body of
     Left err  -> respond $ responseLBS H.status400 [] $ fromString err
     Right x   -> do (status, headers, y) <- f x
-                    respond $ responseLBS status headers $ encode y
+                    respond $ responseLBS status ((H.hContentType, fromString "application/json") : headers) $ encode y

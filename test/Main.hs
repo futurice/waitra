@@ -48,6 +48,7 @@ jsonCase1 = runApp $ do
   let req = setPath defaultRequest "/api/json"
   res <- srequest $ SRequest req "{}"
   assertStatus 200 res
+  assertHeader H.hContentType "application/json" res
   assertBody "\"object\"" res
 
 -- Cannot parse number as json
