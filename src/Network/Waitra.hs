@@ -15,6 +15,7 @@ module Network.Waitra
   -- * Types
     Path
   , Route(..)
+  , route
   -- * Static paths routes
   , simpleRoute
   , simpleGet
@@ -26,15 +27,19 @@ module Network.Waitra
   , routePost
   , routePut
   , routeDelete
+  -- * JSON helper
+  , jsonApp
   -- * Compilation
   , compile
   , compileRoute
   ) where
 
+import           Data.Aeson
 import qualified Data.Text as T
 import qualified Network.HTTP.Types as H
 import           Network.Wai
 import           Text.Regex.Applicative
+import Data.String (fromString)
 
 -- | We use strings, as - unluckily - `Text.Regex.Applicative` doesn't work with `Text` directly.
 type Path = String
@@ -83,3 +88,11 @@ compileRoute (Route method re) app req =
 -- | Turn the list of routes into `Middleware`
 compile :: [Route] -> Middleware
 compile = foldr (.) id . map compileRoute
+
+jsonApp :: (FromJSON a, ToJSON b) => (a -> (H.Status, H.ResponseHeaders, b)) -> Application
+jsonApp f req respond = do
+  body <- strictRequestBody req
+  case eitherDecode body of
+    Left err  -> respond $ responseLBS H.status400 [] $ fromString err
+    Right x   -> let (status, headers, y) = f x
+                 in respond $ responseLBS status headers $ encode y
