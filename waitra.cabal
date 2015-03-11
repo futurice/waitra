@@ -1,5 +1,5 @@
 name:                waitra
-version:             0.0.1.0
+version:             0.0.2.0
 synopsis:            A very simple Wai router
 description:
   Waitra is a very simple router.
