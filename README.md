@@ -10,7 +10,7 @@ when you don't want to use the whole Yesod stack.
 
 ```hs
 echoRoute :: Route
-echoRoute = routeGet (string "/api/echo/" *> many anySym) echoApp
+echoRoute = routeGet (echoApp <$ string "/api/echo/" <*> many anySym)
   where echoApp msg _req respond = respond $ responseLBS status200 [] (fromString msg)
 
 app :: Application

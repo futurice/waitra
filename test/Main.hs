@@ -12,7 +12,7 @@ import           Test.Tasty.HUnit
 import           Text.Regex.Applicative
 
 echoRoute :: Route
-echoRoute = routeGet (string "/api/echo/" *> many anySym) echoApp
+echoRoute = routeGet (echoApp <$ string "/api/echo/" <*> many anySym)
   where echoApp msg _req respond = respond $ responseLBS H.status200 [] (fromString msg)
 
 jsonRoute :: Route

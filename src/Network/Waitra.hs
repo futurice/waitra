@@ -15,7 +15,6 @@ module Network.Waitra
   -- * Types
     Path
   , Route(..)
-  , route
   -- * Static paths routes
   , simpleRoute
   , simpleGet
@@ -46,11 +45,8 @@ type Path = String
 
 data Route = Route H.Method (RE Char Application)
 
-route :: H.Method -> RE Char a -> (a -> Application) -> Route
-route method re app = Route method (app <$> re)
-
 simpleRoute :: H.Method -> Path -> Application -> Route
-simpleRoute method r app = route method (string r) (const app)
+simpleRoute method r app = Route method (const app <$> string r)
 
 simpleGet :: Path -> Application -> Route
 simpleGet = simpleRoute H.methodGet
@@ -64,17 +60,17 @@ simplePut = simpleRoute H.methodPut
 simpleDelete :: Path -> Application -> Route
 simpleDelete = simpleRoute H.methodDelete
 
-routeGet :: RE Char a -> (a -> Application) -> Route
-routeGet = route H.methodGet
+routeGet :: RE Char Application -> Route
+routeGet = Route H.methodGet
 
-routePost :: RE Char a -> (a -> Application) -> Route
-routePost = route H.methodPost
+routePost :: RE Char Application -> Route
+routePost = Route H.methodPost
 
-routeDelete :: RE Char a -> (a -> Application) -> Route
-routeDelete = route H.methodDelete
+routeDelete :: RE Char Application -> Route
+routeDelete = Route H.methodDelete
 
-routePut :: RE Char a -> (a -> Application) -> Route
-routePut = route H.methodPut
+routePut :: RE Char Application -> Route
+routePut = Route H.methodPut
 
 path :: Request -> Path
 path req = T.unpack . T.intercalate (T.pack "/") $ T.pack "" : pathInfo req
