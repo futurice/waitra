@@ -1,6 +1,3 @@
-{-# LANGUAGE GADTs #-}
-{-# LANGUAGE RankNTypes #-}
-{-# LANGUAGE OverloadedStrings #-}
 -----------------------------------------------------------------------------
 -- |
 -- Module      :  Network.Waitra
@@ -8,7 +5,6 @@
 -- License     :  MIT (see the file LICENSE)
 -- Maintainer  :  Oleg Grenrus <oleg.grenrus@iki.fi>
 -- Stability   :  experimental
--- Portability :  GADTs and RankNTypes
 --
 -- @Network.Waitra@ is a very simple router.
 -- It's useful for writing simple API web-services,
@@ -43,11 +39,13 @@ import           Text.Regex.Applicative
 -- | We use strings, as - unluckily - `Text.Regex.Applicative` doesn't work with `Text` directly.
 type Path = String
 
-data Route where
-  Route :: forall a. H.Method -> RE Char a -> (a -> Application) -> Route
+data Route = Route H.Method (RE Char Application)
+
+route :: H.Method -> RE Char a -> (a -> Application) -> Route
+route method re app = Route method (app <$> re)
 
 simpleRoute :: H.Method -> Path -> Application -> Route
-simpleRoute method r app = Route method (string r) (const app)
+simpleRoute method r app = route method (string r) (const app)
 
 simpleGet :: Path -> Application -> Route
 simpleGet = simpleRoute H.methodGet
@@ -62,25 +60,25 @@ simpleDelete :: Path -> Application -> Route
 simpleDelete = simpleRoute H.methodDelete
 
 routeGet :: RE Char a -> (a -> Application) -> Route
-routeGet = Route H.methodGet
+routeGet = route H.methodGet
 
 routePost :: RE Char a -> (a -> Application) -> Route
-routePost = Route H.methodPost
+routePost = route H.methodPost
 
 routeDelete :: RE Char a -> (a -> Application) -> Route
-routeDelete = Route H.methodDelete
+routeDelete = route H.methodDelete
 
 routePut :: RE Char a -> (a -> Application) -> Route
-routePut = Route H.methodPut
+routePut = route H.methodPut
 
 path :: Request -> Path
-path req = T.unpack . T.intercalate "/" $ "" : pathInfo req
+path req = T.unpack . T.intercalate (T.pack "/") $ (T.pack "") : pathInfo req
 
 compileRoute :: Route -> Middleware
-compileRoute (Route method re routeApp) app req =
+compileRoute (Route method re) app req =
    case (requestMethod req == method, path req =~ re) of
-     (True, Just m')  -> routeApp m' req
-     _                -> app req
+     (True, Just routeApp) -> routeApp req
+     _                     -> app req
 
 -- | Turn the list of routes into `Middleware`
 compile :: [Route] -> Middleware
