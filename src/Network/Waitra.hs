@@ -77,7 +77,7 @@ routePut :: RE Char a -> (a -> Application) -> Route
 routePut = route H.methodPut
 
 path :: Request -> Path
-path req = T.unpack . T.intercalate (T.pack "/") $ (T.pack "") : pathInfo req
+path req = T.unpack . T.intercalate (T.pack "/") $ T.pack "" : pathInfo req
 
 routeMiddleware :: Route -> Middleware
 routeMiddleware (Route method re) app req =
@@ -87,7 +87,7 @@ routeMiddleware (Route method re) app req =
 
 -- | Turn the list of routes into `Middleware`
 waitraMiddleware :: [Route] -> Middleware
-waitraMiddleware = foldr (.) id . map routeMiddleware
+waitraMiddleware = foldr ((.) . routeMiddleware) id
 
 jsonApp :: (FromJSON a, ToJSON b) => (a -> IO (H.Status, H.ResponseHeaders, b)) -> Application
 jsonApp f req respond = do
