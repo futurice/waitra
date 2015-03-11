@@ -16,3 +16,7 @@ echoRoute = routeGet (echoApp <$ string "/api/echo/" <*> many anySym)
 app :: Application
 app = waitraMiddleware [echoRoute] fallbackApp
 ```
+
+## Documentation
+
+Documentation is available at [hackage](http://hackage.haskell.org/package/waitra).
