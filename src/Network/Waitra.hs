@@ -34,11 +34,11 @@ module Network.Waitra
   ) where
 
 import           Data.Aeson
+import           Data.String (fromString)
 import qualified Data.Text as T
 import qualified Network.HTTP.Types as H
 import           Network.Wai
 import           Text.Regex.Applicative
-import Data.String (fromString)
 
 -- | We use strings, as - unluckily - `Text.Regex.Applicative` doesn't work with `Text` directly.
 type Path = String
