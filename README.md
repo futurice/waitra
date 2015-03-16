@@ -14,7 +14,7 @@ echoRoute = routeGet (echoApp <$ string "/api/echo/" <*> many anySym)
   where echoApp msg _req respond = respond $ responseLBS status200 [] (fromString msg)
 
 app :: Application
-app = waitraMiddleware [echoRoute] fallbackApp
+app = waitraMiddleware [echoRoute] $ staticApp $ embeddedSettings $(mkRecursiveEmbedded "static")
 ```
 
 ## Documentation
