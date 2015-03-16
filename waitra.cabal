@@ -11,7 +11,7 @@ description:
   >  where echoApp msg _req respond = respond $ responseLBS status200 [] (fromString msg)
   >
   > app :: Application
-  > app = waitraMiddleware [echoRoute] fallbackApp
+  > app = waitraMiddleware [echoRoute] $ staticApp $ embeddedSettings $(mkRecursiveEmbedded "static")
 homepage:            https://github.com/futurice/waitra
 license:             MIT
 license-file:        LICENSE
