@@ -32,12 +32,16 @@ module Network.Waitra
   -- * Compilation
   , routeMiddleware
   , waitraMiddleware
+  -- * Re-exports
+  , module Text.Regex.Applicative
+  , module Network.HTTP.Types.Status
   ) where
 
 import           Data.Aeson
 import           Data.String (fromString)
 import qualified Data.Text as T
 import qualified Network.HTTP.Types as H
+import Network.HTTP.Types.Status
 import           Network.Wai
 import           Text.Regex.Applicative
 
