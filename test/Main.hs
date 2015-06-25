@@ -35,7 +35,7 @@ echoCase1 = runApp $ do
   res <- request req
   assertStatus 200 res
   assertBody "foobar" res
-             
+
 echoCase2 :: IO ()
 echoCase2 = runApp $ do
   let req = setPath defaultRequest "/not-found"
@@ -55,7 +55,7 @@ jsonCase2 :: IO ()
 jsonCase2 = runApp $ do
   let req = setPath defaultRequest "/api/json"
   res <- srequest $ SRequest req "42"
-  assertStatus 400 res
+  assertStatus 404 res
 
 tests :: TestTree
 tests = testGroup "Unit tests"
