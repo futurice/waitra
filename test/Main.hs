@@ -50,12 +50,12 @@ jsonCase1 = runApp $ do
   assertHeader hContentType "application/json" res
   assertBody "\"object\"" res
 
--- Cannot parse number as json
+-- Cannot parse random string as json
 jsonCase2 :: IO ()
 jsonCase2 = runApp $ do
   let req = setPath defaultRequest "/api/json"
-  res <- srequest $ SRequest req "42"
-  assertStatus 404 res
+  res <- srequest $ SRequest req "foo"
+  assertStatus 400 res
 
 tests :: TestTree
 tests = testGroup "Unit tests"
