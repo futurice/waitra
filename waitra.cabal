@@ -26,7 +26,7 @@ cabal-version:       >=1.10
 flag examples
   description:       Build example executables
   default:           False
-  manual:            True 
+  manual:            True
 
 
 library
